@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: apply
+  name: mongodb
 spec:
   workspaces:
   - name: src
@@ -39,18 +39,15 @@ spec:
 
   - name: apply
     taskRef:
-      name: oc
+      name: oc-apply
     runAfter: ["clone"]
     params:
-    - name: ARGS
-      value: 
-      - apply
-      - -f
-      - "$(params.resources-dir)"
-      - -n
-      - "$(params.target-namespace)"
+    - name: resources
+      value: $(params.resources-dir)
+    - name: namespace
+      value: $(params.target-namespace)
     workspaces:
-    - name: src
+    - name: source
       workspace: src
     
   - name: wait
@@ -67,23 +64,5 @@ spec:
       - "$(params.target-namespace)"
       - -w
     workspaces:
-    - name: src
-      workspace: src
-
-  - name: test
-    taskRef:
-      name: oc
-    runAfter: ["wait"]
-    params:
-    - name: ARGS
-      value:
-      - rsh
-      - "dc/$()" bash -c 'mongo -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_DATABASE --quiet --eval "db.ratings.find()"'
-      - status
-      - "dc/$(params.app-name)"
-      - -n
-      - "$(params.target-namespace)"
-      - -w
-    workspaces:
-    - name: src
+    - name: source
       workspace: src

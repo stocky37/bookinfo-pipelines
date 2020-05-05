@@ -4,8 +4,8 @@ metadata:
   name: oc
 spec:
   workspaces:
-  - name: src
-    description: The src workspace
+  - name: source
+    description: The source workspace
   params:
   - name: SCRIPT
     type: string
@@ -20,7 +20,7 @@ spec:
   - name: oc
     image: quay.io/openshift/origin-cli:latest
     script: $(params.SCRIPT)
-    workingDir: "$(workspaces.src.path)"
+    workingDir: "$(workspaces.source.path)"
     args:
     - $(params.ARGS)
     

@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: oc-apply
+spec:
+  workspaces:
+  - name: source
+    description: The source workspace
+  params:
+  - name: resources
+    type: string
+    description: File or directory containing k8s resources to apply
+    default: deploy
+  - name: namespace
+    type: string
+    description: Target namespace to apply resources to
+
+  steps:
+  - name: apply
+    image: quay.io/openshift/origin-cli:latest
+    script: oc $@
+    workingDir: $(workspaces.source.path)
+    args:
+      - apply
+      - -f
+      - $(params.resources)
+      - -n
+      - $(params.namespace)

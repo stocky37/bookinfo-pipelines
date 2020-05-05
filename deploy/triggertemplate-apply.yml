@@ -20,7 +20,7 @@ spec:
     spec:
       serviceAccountName: pipeline
       pipelineRef:
-        name: apply
+        name: $(params.git-repo-short-name)
       params:
       - name: target-namespace
         value: bookinfo
