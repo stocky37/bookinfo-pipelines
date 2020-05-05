@@ -39,30 +39,31 @@ spec:
 
   - name: apply
     taskRef:
-      name: oc-apply
+      name: oc-apply-wait
     runAfter: ["clone"]
     params:
     - name: resources
       value: $(params.resources-dir)
     - name: namespace
       value: $(params.target-namespace)
+    - name: deployment
+      value: dc/$(params.app-name)
     workspaces:
     - name: source
       workspace: src
-    
-  - name: wait
-    taskRef:
-      name: oc
-    runAfter: ["apply"]
-    params:
-    - name: ARGS
-      value:
-      - rollout
-      - status
-      - "dc/$(params.app-name)"
-      - -n
-      - "$(params.target-namespace)"
-      - -w
-    workspaces:
-    - name: source
-      workspace: src
+
+  # - name: smoke-test
+  #   taskRef:
+  #     name: openshift-client
+  #     kind: ClusterTask
+  #   runAfter: ["apply"]
+  #   params:
+  #   - name: ARGS
+  #     value:
+  #     - rsh
+  #     - -n
+  #     - $(params.target-namespace)
+  #     - dc/$(params.app-name)
+  #     - bash
+  #     - -c
+  #     - "'mongo -u \"$MONGODB_USER\" -p \"$MONGODB_PASSWORD\" \"$MONGODB_DATABASE\" --quiet --eval \"db.ratings.find()\"'"

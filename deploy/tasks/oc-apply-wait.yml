@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: oc-apply-wait
+spec:
+  workspaces:
+  - name: source
+    description: The source workspace
+
+  params:
+  - name: namespace
+    type: string
+    description: Target namespace to apply resources to
+
+  - name: resources
+    type: string
+    description: File or directory containing k8s resources to apply
+    default: deploy
+
+  - name: deployment
+    type: string
+    description: Deployment resource to watch for rollout after applying
+
+  steps:
+  - name: apply
+    image: quay.io/openshift/origin-cli:latest
+    script: oc $@
+    workingDir: $(workspaces.source.path)
+    args:
+      - apply
+      - -f
+      - $(params.resources)
+      - -n
+      - $(params.namespace)
+
+  - name: watch
+    image: quay.io/openshift/origin-cli:latest
+    script: oc $@
+    args:
+      - rollout
+      - status
+      - $(params.deployment)
+      - -n
+      - $(params.namespace)
+      - -w

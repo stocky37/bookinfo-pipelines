@@ -52,6 +52,7 @@ oc create secret generic webhooks --from-literal=secret=password
   - **Answer:** Interceptors
 - How do I secure the webhook so that only repos I own can trigger it?
   - **Answer:** Use the gitub interceptor with a secret, and the CEL interpreter to select based on info in the webhook body (e.g. specific repos)
+- How do I run a command like this: `oc rsh dc/mongodb bash -c 'mongo -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_DATABASE --quiet --eval "db.ratings.find()"'` - I am having problem with different things being escaped
 
 ## General Pipelines
 

@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: oc-rollout-watch
+spec:
+  params:
+  - name: resource
+    type: string
+    description: File or directory containing k8s resources to apply
+    default: deploy
+  - name: namespace
+    type: string
+    description: Target namespace to apply resources to
+
+  steps:
+  - name: watch
+    image: quay.io/openshift/origin-cli:latest
+    script: oc $@
+    args:
+      - rollout
+      - status
+      - $(params.resource)
+      - -n
+      - $(params.namespace)
+      - -w
