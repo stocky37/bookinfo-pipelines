@@ -1,0 +1,10 @@
+digraph pipeline {
+  app -> build -> unittest -> deployDev -> testDev -> deployQA -> testQA;
+  appK8s -> deployK8sDev -> testDev -> deployK8sQa -> testQA;
+
+  testQA -> deployProd [ label = "manual trigger?" ];
+  testQA -> deployK8sProd [ label = "manual trigger?" ];
+  
+  deployProd -> testProd
+  deployK8sProd -> testProd
+}

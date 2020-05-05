@@ -1,0 +1,36 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: apply
+spec:
+  params:
+  - name: git-repo-short-name
+    description: The name of the application
+  - name: git-repo-url
+    description: The git repository url
+  - name: git-revision
+    description: The git revision
+    default: master
+
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: $(params.git-repo-short-name)-apply-$(uid)
+    spec:
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: apply
+      params:
+      - name: target-namespace
+        value: bookinfo
+      - name: git-repo-url
+        value: $(params.git-repo-url)
+      - name: git-revision
+        value: $(params.git-revision)
+      - name: app-name
+        value: $(params.git-repo-short-name)
+      workspaces:
+      - name: src
+        persistentVolumeClaim:
+          claimName: $(params.git-repo-short-name)-src

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+SECRET_NAME=webhooks
+SECRET_KEY=secret
+EVENT_TYPE=push
+PAYLOAD="${1:-"${SCRIPT_DIR}/payloads/mongodb-tekton.json"}"
+
+endpoint="$(oc get route el-bookinfo --template '{{.spec.host}}')"
+secret="$(oc get "secret/${SECRET_NAME}" --template "{{.data.${SECRET_KEY}}}" | base64 -d)"
+
+data="$(cat "$PAYLOAD")"
+signature=$(echo -n "${data}" | openssl dgst -sha1 -hmac "${secret}" | awk '{print $2}')
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "X-Hub-Signature: sha1=${signature}" \
+  -H "X-GitHub-Event: ${EVENT_TYPE}" \
+  --data "${data}" \
+  "http://$endpoint"

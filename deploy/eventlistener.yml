@@ -1,0 +1,27 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: bookinfo
+spec:
+  serviceAccountName: pipeline
+  triggers:
+  - interceptors:
+    - github:
+        secretRef:
+          secretName: webhooks
+          secretKey: secret
+        eventTypes:
+          - push
+    - cel:
+        filter: >-
+          body.repository.owner.login == 'tom-stockwell'
+            && body.ref == 'refs/head/tekton'
+        overlays:
+        - key: intercepted.short_name
+          expression: "split(body.repository.name, '-')[1]"
+    bindings:
+    - name: github-push
+      kind: ClusterTriggerBinding
+    - name: github-extras
+    template:
+      name: apply

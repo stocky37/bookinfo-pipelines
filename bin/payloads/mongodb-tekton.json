@@ -1,0 +1,15 @@
+{
+    "ref": "refs/head/tekton",
+    "head_commit": {
+        "id": "9ba1ef0e2418f1c6041fb22ca469b825cacf280e",
+        "message": "Add mongodb label to configmap"
+    },
+    "repository": {
+        "name": "bookinfo-mongodb",
+        "url": "https://github.com/tom-stockwell/bookinfo-mongodb.git",
+        "owner": {
+            "login": "tom-stockwell"
+        }
+    },
+    "name": "tom-stockwell"
+}

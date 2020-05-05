@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: oc
+spec:
+  workspaces:
+  - name: src
+    description: The src workspace
+  params:
+  - name: SCRIPT
+    type: string
+    description: The OpenShift CLI arguments to run
+    default: oc $@
+  - name: ARGS
+    type: array
+    description: The OpenShift CLI arguments to run
+    default:
+    - help
+  steps:
+  - name: oc
+    image: quay.io/openshift/origin-cli:latest
+    script: $(params.SCRIPT)
+    workingDir: "$(workspaces.src.path)"
+    args:
+    - $(params.ARGS)
+    
+    

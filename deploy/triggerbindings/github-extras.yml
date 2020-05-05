@@ -1,0 +1,8 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: github-extras
+spec:
+  params:
+  - name: git-repo-short-name
+    value: $(body.intercepted.short_name)
