@@ -2,6 +2,8 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: apply
+  labels:
+    app.kubernetes.io/managed-by: apply
 spec:
   params:
   - name: git-repo-short-name
@@ -20,7 +22,7 @@ spec:
     spec:
       serviceAccountName: pipeline
       pipelineRef:
-        name: $(params.git-repo-short-name)
+        name: apply
       params:
       - name: target-namespace
         value: bookinfo

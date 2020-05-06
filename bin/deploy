@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+oc apply -Rf "$SCRIPT_DIR/../deploy" --prune \
+    -lapp.kubernetes.io/managed-by=apply \
+    --prune-whitelist=core/v1/PersistentVolumeClaim \
+    --prune-whitelist=route.openshift.io/v1/Route \
+    --prune-whitelist=tekton.dev/v1beta1/Task \
+    --prune-whitelist=tekton.dev/v1beta1/TaskRun \
+    --prune-whitelist=tekton.dev/v1beta1/Pipeline \
+    --prune-whitelist=tekton.dev/v1beta1/PipelineRun \
+    --prune-whitelist=triggers.tekton.dev/v1alpha1/EventListener \
+    --prune-whitelist=triggers.tekton.dev/v1alpha1/TriggerBinding \
+    --prune-whitelist=triggers.tekton.dev/v1alpha1/TriggerTemplate

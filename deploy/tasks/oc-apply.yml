@@ -2,6 +2,8 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: oc-apply
+  labels:
+    app.kubernetes.io/managed-by: apply
 spec:
   workspaces:
   - name: source

@@ -2,6 +2,8 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: bookinfo
+  labels:
+    app.kubernetes.io/managed-by: apply
 spec:
   serviceAccountName: pipeline
   triggers:
