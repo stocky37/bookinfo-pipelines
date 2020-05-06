@@ -3,7 +3,7 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 oc apply -Rf "$SCRIPT_DIR/../deploy" --prune \
-    -lapp.kubernetes.io/managed-by=apply \
+    -lapp.kubernetes.io/managed-by=apply,app.kubernetes.io/part-of=cicd \
     --prune-whitelist=core/v1/PersistentVolumeClaim \
     --prune-whitelist=route.openshift.io/v1/Route \
     --prune-whitelist=tekton.dev/v1beta1/Task \

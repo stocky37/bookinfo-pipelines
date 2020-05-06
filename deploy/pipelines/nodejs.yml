@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: nodejs
+  labels:
+    app.kubernetes.io/part-of: cicd
+    app.kubernetes.io/managed-by: apply
+spec:
+  workspaces:
+    - name: source
+
+  params:
+    - name: app-name
+      type: string
+    - name: git-repo-url
+      type: string
+    - name: git-short-sha
+      type: string
+    - name: git-revision
+      type: string
+      default: master
+    - name: namespace
+      description: Namespace of the image/imagestream
+      type: string
+      default: bookinfo-cicd
+
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-repo-url)
+        - name: revision
+          value: $(params.git-revision)
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: source
+
+    - name: build
+      taskRef:
+        name: s2i-nodejs
+      runAfter: ["clone"]
+      params:
+        - name: IMAGE_URL
+          value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.app-name):$(params.git-short-sha)
+        - name: TLSVERIFY
+          value: "false"
+      workspaces:
+        - name: source
+          workspace: source

@@ -3,6 +3,7 @@ kind: Task
 metadata:
   name: oc
   labels:
+    app.kubernetes.io/part-of: cicd
     app.kubernetes.io/managed-by: apply
 spec:
   workspaces:

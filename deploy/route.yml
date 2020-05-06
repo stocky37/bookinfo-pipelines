@@ -3,9 +3,9 @@ kind: Route
 metadata:
   name: el-bookinfo
   labels:
-    app.kubernetes.io/managed-by: apply
-    app.kubernetes.io/part-of: Triggers
     eventlistener: bookinfo
+    app.kubernetes.io/part-of: cicd
+    app.kubernetes.io/managed-by: apply
 spec:
   port:
     targetPort: http-listener

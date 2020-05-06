@@ -3,12 +3,13 @@ kind: TriggerBinding
 metadata:
   name: github-extras
   labels:
+    app.kubernetes.io/part-of: cicd
     app.kubernetes.io/managed-by: apply
 spec:
   params:
-  - name: git-short-repo-name
-    value: $(body.intercepted.git-repo-name)
   - name: app-name
     value: $(body.intercepted.app-name)
   - name: git-ref
     value: $(body.ref)
+  - name: git-short-sha
+    value: $(body.intercepted.short-sha)

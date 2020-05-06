@@ -3,10 +3,11 @@ kind: Pipeline
 metadata:
   name: apply
   labels:
+    app.kubernetes.io/part-of: cicd
     app.kubernetes.io/managed-by: apply
 spec:
   workspaces:
-  - name: src
+  - name: source
 
   params:
   - name: app-name
@@ -37,7 +38,7 @@ spec:
       value: 'true'
     workspaces:
     - name: output
-      workspace: src
+      workspace: source
 
   - name: apply
     taskRef:
@@ -52,4 +53,4 @@ spec:
       value: dc/$(params.app-name)
     workspaces:
     - name: source
-      workspace: src
+      workspace: source

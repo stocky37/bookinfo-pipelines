@@ -1,0 +1,10 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: ratings
+  labels:
+    app.kubernetes.io/part-of: cicd
+    app.kubernetes.io/managed-by: apply
+spec:
+  lookupPolicy:
+    local: false

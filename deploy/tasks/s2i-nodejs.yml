@@ -1,0 +1,82 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: s2i-nodejs
+  labels:
+    app.kubernetes.io/part-of: cicd
+    app.kubernetes.io/managed-by: apply
+spec:
+  workspaces:
+  - name: source
+    description: The source workspace
+  params:
+  - default: "10"
+    description: The version of the nodejs
+    name: VERSION
+    type: string
+  - default: .
+    description: The location of the path to run s2i from.
+    name: PATH_CONTEXT
+    type: string
+  - default: "true"
+    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+      registry)
+    name: TLSVERIFY
+    type: string
+  - name: IMAGE_URL
+    type: string
+  steps:
+  - command:
+    - s2i
+    - build
+    - $(params.PATH_CONTEXT)
+    - registry.access.redhat.com/rhscl/nodejs-$(params.VERSION)-rhel7
+    - --as-dockerfile
+    - /gen-source/Dockerfile.gen
+    image: quay.io/openshift-pipeline/s2i
+    name: generate
+    resources: {}
+    volumeMounts:
+    - mountPath: /gen-source
+      name: gen-source
+    workingDir: $(workspaces.source.path)
+  - command:
+    - buildah
+    - bud
+    - --tls-verify=$(params.TLSVERIFY)
+    - --layers
+    - -f
+    - /gen-source/Dockerfile.gen
+    - -t
+    - $(params.IMAGE_URL)
+    - .
+    image: quay.io/buildah/stable:v1.11.0
+    name: build
+    resources: {}
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/lib/containers
+      name: varlibcontainers
+    - mountPath: /gen-source
+      name: gen-source
+    workingDir: /gen-source
+  - command:
+    - buildah
+    - push
+    - --tls-verify=$(params.TLSVERIFY)
+    - $(params.IMAGE_URL)
+    - docker://$(params.IMAGE_URL)
+    image: quay.io/buildah/stable:v1.11.0
+    name: push
+    resources: {}
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/lib/containers
+      name: varlibcontainers
+  volumes:
+  - emptyDir: {}
+    name: varlibcontainers
+  - emptyDir: {}
+    name: gen-source

@@ -3,11 +3,15 @@ kind: EventListener
 metadata:
   name: bookinfo
   labels:
+    app.kubernetes.io/part-of: cicd
     app.kubernetes.io/managed-by: apply
 spec:
   serviceAccountName: pipeline
   triggers:
-  - interceptors:
+  - name: k8s-repo
+    template:
+      name: apply
+    interceptors:
     - github:
         secretRef:
           secretName: webhooks
@@ -24,9 +28,34 @@ spec:
           expression: "split(body.repository.name, '-')[1]"
         - key: intercepted.git-repo-name
           expression: "split(body.repository.name, '-')[1] + '-' + split(body.repository.name, '-')[2]"
+        - key: intercepted.short_sha
+          expression: "truncate(body.pull_request.head.sha, 7)"
     bindings:
     - name: github-push
       kind: ClusterTriggerBinding
     - name: github-extras
+
+  - name: nodejs-repo
     template:
-      name: apply
+      name: nodejs
+    interceptors:
+    - github:
+        secretRef:
+          secretName: webhooks
+          secretKey: secret
+        eventTypes:
+          - push
+    - cel:
+        filter: >-
+          body.repository.owner.login == 'tom-stockwell'
+            && body.ref == 'refs/head/tekton'
+            && (body.repository.name == 'bookinfo-ratings')
+        overlays:
+        - key: intercepted.app-name
+          expression: "split(body.repository.name, '-')[1]"
+        - key: intercepted.short-sha
+          expression: "truncate(body.head_commit.id, 7)"
+    bindings:
+    - name: github-push
+      kind: ClusterTriggerBinding
+    - name: github-extras

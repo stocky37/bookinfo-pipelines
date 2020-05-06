@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: apply
+  name: nodejs
   labels:
     app.kubernetes.io/part-of: cicd
     app.kubernetes.io/managed-by: apply
@@ -11,6 +11,7 @@ spec:
     description: The name of the application
   - name: git-repo-url
     description: The git repository url
+  - name: git-short-sha
   - name: git-revision
     description: The git revision
     default: master
@@ -19,17 +20,17 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: $(params.app-name)-k8s-$(uid)
+      name: $(params.app-name)-$(uid)
       labels:
-        pipelineTemplate: apply
-        app.kubernetes.io/name: $(params.app-name)-k8s
-        app.kubernetes.io/instance: $(params.app-name)-k8s-$(uid)
-        app.kubernetes.io/part-of: $(params.app-name)-k8s-pipeline
+        pipelineTemplate: nodejs
+        app.kubernetes.io/name: $(params.app-name)
+        app.kubernetes.io/instance: $(params.app-name)-$(uid)
+        app.kubernetes.io/part-of: $(params.app-name)-pipeline
         app.kubernetes.io/managed-by: TemplateTrigger
     spec:
       serviceAccountName: pipeline
       pipelineRef:
-        name: apply
+        name: nodejs
       params:
       - name: target-namespace
         value: bookinfo
@@ -39,7 +40,9 @@ spec:
         value: $(params.git-revision)
       - name: app-name
         value: $(params.app-name)
+      - name: git-short-sha
+        value: $(params.git-short-sha)
       workspaces:
       - name: source
         persistentVolumeClaim:
-          claimName: $(params.app-name)-k8s
+          claimName: $(params.app-name)

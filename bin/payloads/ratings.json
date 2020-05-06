@@ -1,0 +1,15 @@
+{
+    "ref": "refs/head/tekton",
+    "head_commit": {
+        "id": "dd35b89d82bdd152c6dd9607d843e33ce9f38d18",
+        "message": "Filter extraneous values from k8s resources"
+    },
+    "repository": {
+        "name": "bookinfo-ratings",
+        "url": "https://github.com/tom-stockwell/bookinfo-ratings.git",
+        "owner": {
+            "login": "tom-stockwell"
+        }
+    },
+    "name": "tom-stockwell"
+}

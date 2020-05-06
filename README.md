@@ -33,7 +33,12 @@ oc create secret generic webhooks --from-literal=secret=password
     oc get crds -o name | grep tekton | xargs oc delete
     ```
 
-- `PipelineResource` is deprecated, need a newer version of tekton then is available via the operator
+- `PipelineResource`s are deprecated, ~~need a newer version of tekton then is available via the operator~~ need canary version (0.11.3)
+  - git resources are easy enough, what do i do about images/image streams
+- 0.12.0 of tekton coming out soonish, will have some breaking changes
+  - cel interceptor functions (`split()` to `body.blah.split()`)
+  - Will have PVCTemplate for pipeline runs, rather than manually creating a pvc
+- May have to tweak handling of github push events as i'm currently just mocking what I think is correct
 - Can fake webhook using curl (`bin/webhook`) (for internal networks, or just to trigger pipeline for testing)
 - Assuming secrets separate, to create insecure secrets to get it going, use:
 
@@ -46,6 +51,11 @@ oc create secret generic webhooks --from-literal=secret=password
         --from-literal=database-name=ratings
     ```
 
+- tekton task s2i
+  - no imagestream support
+  - pulls images from external registries (unless we use an imported version, so more local?)
+  - needs privileges?
+
 ## Questions
 
 - How do I do some other basic things like trigger different pipelines for different branches
@@ -53,6 +63,10 @@ oc create secret generic webhooks --from-literal=secret=password
 - How do I secure the webhook so that only repos I own can trigger it?
   - **Answer:** Use the gitub interceptor with a secret, and the CEL interpreter to select based on info in the webhook body (e.g. specific repos)
 - How do I run a command like this: `oc rsh dc/mongodb bash -c 'mongo -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_DATABASE --quiet --eval "db.ratings.find()"'` - I am having problem with different things being escaped
+  - Was an example in an openshift-pipelines tutorial task
+
+- I don't really see the point of triggerbindings, don't we already map vars in triggertemplate?
+  - Maybe the templates are meant to be more reusable? Can't really see it though.
 
 ## General Pipelines
 

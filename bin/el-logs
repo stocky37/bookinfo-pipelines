@@ -1,0 +1,3 @@
+#!/bin/bash
+
+oc logs -f $(oc get pods -l eventlistener=bookinfo -o name | head -n 1)
