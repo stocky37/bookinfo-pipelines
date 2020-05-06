@@ -30,7 +30,7 @@ spec:
     workingDir: $(workspaces.source.path)
     args:
       - apply
-      - -f
+      - -Rf
       - $(params.resources)
       - -n
       - $(params.namespace)

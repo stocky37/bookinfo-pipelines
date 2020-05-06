@@ -6,8 +6,10 @@ metadata:
     app.kubernetes.io/managed-by: apply
 spec:
   params:
-  - name: git-repo-short-name
+  - name: app-name
     description: The name of the application
+  - name: git-short-repo-name
+    description: The name of the git repository
   - name: git-repo-url
     description: The git repository url
   - name: git-revision
@@ -18,7 +20,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: $(params.git-repo-short-name)-apply-$(uid)
+      name: $(params.app-name)-apply-$(uid)
     spec:
       serviceAccountName: pipeline
       pipelineRef:
@@ -31,8 +33,8 @@ spec:
       - name: git-revision
         value: $(params.git-revision)
       - name: app-name
-        value: $(params.git-repo-short-name)
+        value: $(params.app-name)
       workspaces:
       - name: src
         persistentVolumeClaim:
-          claimName: $(params.git-repo-short-name)-src
+          claimName: $(params.git-short-repo-name)-src

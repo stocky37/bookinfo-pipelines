@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongodb-src
+  name: ratings-k8s-src
   labels:
     app.kubernetes.io/managed-by: apply
 spec:

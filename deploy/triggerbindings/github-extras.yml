@@ -6,5 +6,9 @@ metadata:
     app.kubernetes.io/managed-by: apply
 spec:
   params:
-  - name: git-repo-short-name
-    value: $(body.intercepted.short_name)
+  - name: git-short-repo-name
+    value: $(body.intercepted.git-repo-name)
+  - name: app-name
+    value: $(body.intercepted.app-name)
+  - name: git-ref
+    value: $(body.ref)

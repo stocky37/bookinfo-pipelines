@@ -22,7 +22,7 @@ spec:
   - name: resources-dir
     type: string
     description: Location of the resources to apply
-    default: .k8s/resources
+    default: '.'
 
   tasks:
   - name: clone

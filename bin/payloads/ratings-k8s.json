@@ -1,0 +1,15 @@
+{
+    "ref": "refs/head/master",
+    "head_commit": {
+        "id": "abebdf1a3cb64b6410f607c950926ae184719352",
+        "message": "Add initial resources for mongodb"
+    },
+    "repository": {
+        "name": "bookinfo-ratings-k8s",
+        "url": "https://github.com/tom-stockwell/bookinfo-ratings-k8s.git",
+        "owner": {
+            "login": "tom-stockwell"
+        }
+    },
+    "name": "tom-stockwell"
+}

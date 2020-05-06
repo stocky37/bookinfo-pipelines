@@ -68,9 +68,12 @@ oc create secret generic webhooks --from-literal=secret=password
 
 ## To Do
 
+- [x] Deploy to a different env from pipeline
+- [ ] Deploy ratings database k8s resources from separate repo
+- [ ] Build ratings service from original repo
+- [ ] Deploy ratings k8s resources from separate repo[]
 - [ ] Basic proof of concept with bookinfo-mongodb
 - [ ] Wait for k8s events to complete (build, deployment etc.)
-- [x] Deploy to a different env from pipeline
 - [ ] Separate app & k8s resources pipelines
 - [ ] Separate builds from deployments
 - [ ] Build in tekton image or buildconfig
