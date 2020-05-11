@@ -13,9 +13,9 @@ secret="$(oc get "secret/${SECRET_NAME}" --template "{{.data.${SECRET_KEY}}}" | 
 data="$(cat "$PAYLOAD")"
 signature=$(echo -n "${data}" | openssl dgst -sha1 -hmac "${secret}" | awk '{print $2}')
 
-curl -X POST \
+curl -k -X POST \
   -H "Content-Type: application/json" \
   -H "X-Hub-Signature: sha1=${signature}" \
   -H "X-GitHub-Event: ${EVENT_TYPE}" \
   --data "${data}" \
-  "http://$endpoint"
+  "https://$endpoint"

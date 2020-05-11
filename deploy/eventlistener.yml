@@ -20,19 +20,18 @@ spec:
           - push
     - cel:
         filter: >-
-          body.repository.owner.login == 'tom-stockwell'
-            && body.ref == 'refs/head/master'
+          body.repository.owner.name == 'tom-stockwell'
+            && body.ref == 'refs/heads/master'
             && body.repository.name.endsWith('-k8s')
         overlays:
         - key: intercepted.app-name
           expression: "split(body.repository.name, '-')[1]"
         - key: intercepted.git-repo-name
           expression: "split(body.repository.name, '-')[1] + '-' + split(body.repository.name, '-')[2]"
-        - key: intercepted.short_sha
-          expression: "truncate(body.pull_request.head.sha, 7)"
+        - key: intercepted.short-sha
+          expression: "truncate(body.after, 7)"
     bindings:
     - name: github-push
-      kind: ClusterTriggerBinding
     - name: github-extras
 
   - name: nodejs-repo
@@ -47,15 +46,14 @@ spec:
           - push
     - cel:
         filter: >-
-          body.repository.owner.login == 'tom-stockwell'
-            && body.ref == 'refs/head/tekton'
+          body.repository.owner.name == 'tom-stockwell'
+            && body.ref == 'refs/heads/tekton'
             && (body.repository.name == 'bookinfo-ratings')
         overlays:
         - key: intercepted.app-name
           expression: "split(body.repository.name, '-')[1]"
         - key: intercepted.short-sha
-          expression: "truncate(body.head_commit.id, 7)"
+          expression: "truncate(body.after, 7)"
     bindings:
     - name: github-push
-      kind: ClusterTriggerBinding
     - name: github-extras

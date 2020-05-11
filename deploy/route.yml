@@ -9,6 +9,8 @@ metadata:
 spec:
   port:
     targetPort: http-listener
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
   to:
     kind: Service
     name: el-bookinfo

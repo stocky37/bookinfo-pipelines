@@ -51,3 +51,14 @@ spec:
       workspaces:
         - name: source
           workspace: source
+
+    - name: tag-latest
+      taskRef:
+        name: oc
+      runAfter: ["build"]
+      params:
+        - name: ARGS
+          value:
+          - tag
+          - $(params.namespace)/$(params.app-name):$(params.git-short-sha)
+          - bookinfo/$(params.app-name):latest

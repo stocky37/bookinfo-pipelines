@@ -55,6 +55,10 @@ oc create secret generic webhooks --from-literal=secret=password
   - no imagestream support
   - pulls images from external registries (unless we use an imported version, so more local?)
   - needs privileges?
+- Can't use any of the ClusterTasks anymore :(
+  - **`github-push`** tries to parse `body.name` which doesn't exist in a `push` event webhook
+  - **`s2i-nodejs`** uses PipelineResource for source code rather than workspace
+  - **`openshift-client`** uses PipelineResource for source code rather than workspace
 
 ## Questions
 
@@ -67,6 +71,8 @@ oc create secret generic webhooks --from-literal=secret=password
 
 - I don't really see the point of triggerbindings, don't we already map vars in triggertemplate?
   - Maybe the templates are meant to be more reusable? Can't really see it though.
+
+- Could you use the commits[] array in the webhook to trigger different pipelines depending on which files changed?
 
 ## General Pipelines
 
