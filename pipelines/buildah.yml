@@ -1,0 +1,52 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildah
+spec:
+  workspaces:
+    - name: source
+
+  params:
+    - name: gitUrl
+      type: string
+      description: Git URL of repository to build
+    - name: namespace
+      type: string
+      default: bookinfo-cicd
+      description: Namespace to push image to
+    - name: name
+      type: string
+      description: Name of image to build/push
+    - name: tag
+      type: string
+      default: latest
+      description: Tag of image to build/push
+
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: source
+      params:
+        - name: url
+          value: $(params.gitUrl)
+        - name: deleteExisting
+          value: 'true'
+
+    - name: build
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      runAfter:
+        - clone
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.name):$(params.tag)
+        - name: TLSVERIFY
+          value: 'false'
