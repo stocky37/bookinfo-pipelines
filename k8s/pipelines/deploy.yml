@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: buildah
+  name: deploy
 spec:
   workspaces:
     - name: source
@@ -9,18 +9,16 @@ spec:
   params:
     - name: gitUrl
       type: string
-      description: Git URL of repository to build
-    - name: namespace
+      description: Git URL of repository that contains k8s resources
+      default: https://github.com/stocky37/quarkus-app-k8s.git
+    - name: image
       type: string
-      default: bookinfo-cicd
-      description: Namespace to push image to
-    - name: name
-      type: string
-      description: Name of image to build/push
+      description: Name of image to deploy
+      default: quarkus-app
     - name: tag
       type: string
+      description: Tag of image to deploy
       default: latest
-      description: Tag of image to build/push
 
   tasks:
     - name: clone
@@ -36,17 +34,20 @@ spec:
         - name: deleteExisting
           value: 'true'
 
-    - name: build
+    - name: deploy
       taskRef:
-        name: buildah
-        kind: ClusterTask
+        name: deploy
       runAfter:
         - clone
       workspaces:
         - name: source
           workspace: source
       params:
-        - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.name):$(params.tag)
-        - name: TLSVERIFY
-          value: 'false'
+        - name: namespace
+          value: example-app
+        - name: appImage
+          value: $(params.image)
+        - name: appTag
+          value: $(params.tag)
+
+

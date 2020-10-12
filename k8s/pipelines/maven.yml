@@ -19,11 +19,19 @@ spec:
     - name: name
       type: string
       description: Name of image to build/push
-      default: example-app
+      default: quarkus-app
     - name: tag
       type: string
       description: Tag of image to build/push
       default: latest
+    - name: deployWorkspaceClaim
+      type: string
+      description: Name of the PVC to use for the deploy pipeline workspace
+      default: k8s-src
+    - name: deployPipeline
+      type: string
+      description: Name of the deployment pipeline to kick off
+      default: deploy
 
   tasks:
     - name: clone
@@ -72,3 +80,18 @@ spec:
           value: src/main/docker/Dockerfile.fast-jar
         - name: TLSVERIFY
           value: 'false'
+
+    - name: deploy
+      taskRef:
+        name: tkn
+        kind: ClusterTask
+      runAfter:
+        - buildah
+      params:
+        - name: ARGS
+          value:
+            - pipeline
+            - start
+            - $(params.deployPipeline)
+            - --workspace=name=source,claimName=$(params.deployWorkspaceClaim)
+            - --use-param-defaults
