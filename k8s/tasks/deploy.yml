@@ -1,0 +1,120 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: image
+      type: string
+      description: oc client base image
+      default: quay.io/openshift/origin-cli:latest
+    - name: resourcesDir
+      type: string
+      description: directory of k8s resources
+      default: "."
+    - name: namespace
+      type: string
+      description: namespace to deploy to
+      default: example-app
+    - name: appImage
+      type: string
+      description: Name of image to deploy
+      default: quarkus-app
+    - name: appTag
+      type: string
+      description: Tag of image to deploy
+      default: latest
+
+  steps:
+    - name: k8s-resources
+      image: $(params.image)
+      workingDir: "$(workspaces.source.path)"
+      command:
+        - /bin/bash
+        - -c
+      args:
+        - >-
+          oc apply
+          --recursive
+          --filename $(params.resourcesDir)
+          --namespace $(params.namespace)
+
+    - name: promote-image
+      image: $(params.image)
+      command:
+        - /bin/bash
+        - -c
+      args:
+        - >-
+          oc tag
+          $(params.appImage):$(params.appTag)
+          $(params.namespace)/$(params.appImage):$(params.appTag)
+
+  # steps:
+  #     - name: apply-k8s
+  #       image: $(params.ocImage)
+  #       workingDir: /workspace/source
+  #       command: ["/bin/bash", "-c"]
+  #       args:
+  #         - |-
+  #           oc get dc $(inputs.params.APP_NAME) -n $(inputs.params.DEPLOY_PROJECT)
+  #           if [[ $? -ne 0 ]]
+  #           then
+  #               oc new-app -i $(inputs.params.APP_NAME) -n $(inputs.params.DEPLOY_PROJECT)
+  #           else
+  #               echo "Application already exists."
+  #           fi
+  #     - name: expose-app
+  #       image: quay.io/openshift/origin-cli:latest
+  #       workingDir: /workspace/source
+  #       command: ["/bin/bash", "-c"]
+  #       args:
+  #         - |-
+  #           oc get svc $(inputs.params.APP_NAME) -n $(inputs.params.DEPLOY_PROJECT)
+  #           if [[ $? -ne 0 ]]
+  #           then
+  #               oc expose svc/$(inputs.params.APP_NAME) -n $(inputs.params.DEPLOY_PROJECT)
+  #           else
+  #               echo "Application is already exposed."
+  #           fi
+  #     - name: set-app-labels
+  #       image: quay.io/openshift/origin-cli:latest
+  #       workingDir: /workspace/source
+  #       command: ["/bin/bash", "-c"]
+  #       args:
+  #         - |-
+  #           oc label dc/$(inputs.params.APP_NAME) app.kubernetes.io/name=nodejs --overwrite -n $(inputs.params.DEPLOY_PROJECT)
+  #           oc label dc/$(inputs.params.APP_NAME) app.version=$(inputs.params.APP_VERSION) --overwrite -n $(inputs.params.DEPLOY_PROJECT)
+  #           oc set env dc/$(inputs.params.APP_NAME) app.version=$(inputs.params.APP_VERSION) -n $(inputs.params.DEPLOY_PROJECT)
+  #           oc set env dc/$(inputs.params.APP_NAME) --from secret/$(inputs.params.AUTHORS_API_KEY) -n $(inputs.params.DEPLOY_PROJECT)
+  #     - name: set-app-probes
+  #       image: quay.io/openshift/origin-cli:latest
+  #       workingDir: /workspace/source
+  #       command: ["/bin/bash", "-c"]
+  #       args:
+  #         - |-
+  #           oc set probe dc/$(inputs.params.APP_NAME) --remove --readiness --liveness -n $(inputs.params.DEPLOY_PROJECT)
+  #           oc set probe dc/$(inputs.params.APP_NAME) --readiness --get-url=http://:8080/ --initial-delay-seconds=30 -n $(inputs.params.DEPLOY_PROJECT)
+  #     - name: set-app-autoscale
+  #       image: quay.io/openshift/origin-cli:latest
+  #       workingDir: /workspace/source
+  #       command: ["/bin/bash", "-c"]
+  #       args:
+  #         - |-
+  #           oc get hpa $(inputs.params.APP_NAME)  -n $(inputs.params.DEPLOY_PROJECT)
+  #           if [[ $? -ne 0 ]]
+  #           then
+  #               oc autoscale dc $(inputs.params.APP_NAME) --min 1 --max 2 --cpu-percent=75 -n $(inputs.params.DEPLOY_PROJECT)
+  #           else
+  #               echo "Application autoscale is already configured."
+  #           fi
+  #     - name: describe-app-triggers
+  #       image: quay.io/openshift/origin-cli:latest
+  #       workingDir: /workspace/source
+  #       command: ["/bin/bash", "-c"]
+  #       args:
+  #         - |-
+  #           oc set triggers dc/$(inputs.params.APP_NAME) -n $(inputs.params.DEPLOY_PROJECT)
