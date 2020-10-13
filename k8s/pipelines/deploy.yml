@@ -49,5 +49,5 @@ spec:
           value: $(params.image)
         - name: appTag
           value: $(params.tag)
-
-
+        - name: deployment
+          value: $(params.image)
