@@ -10,7 +10,7 @@ spec:
     - name: gitUrl
       type: string
       description: Git URL of repository that contains k8s resources
-      default: https://github.com/stocky37/quarkus-app-k8s.git
+      default: https://github.com/stocky37/greeting-service-k8s.git
     - name: image
       type: string
       description: Name of image to deploy
