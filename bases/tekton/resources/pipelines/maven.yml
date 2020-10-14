@@ -11,27 +11,40 @@ spec:
     - name: gitUrl
       type: string
       description: Git URL of repository to build
-      default: https://github.com/stocky37/quarkus-app.git
+
     - name: namespace
       type: string
       description: Namespace to push image to
-      default: example-cicd
+
     - name: name
       type: string
-      description: Name of image to build/push
-      default: quarkus-app
+      description: Name of image to build
+
     - name: tag
       type: string
-      description: Tag of image to build/push
       default: latest
+      description: Tag of image to build
+
+    - name: dockerfile
+      type: string
+      default: Dockerfile
+      description: Path to the Dockerfile to build
+
     - name: deployWorkspaceClaim
       type: string
-      description: Name of the PVC to use for the deploy pipeline workspace
       default: k8s-src
+      description: Name of the PVC to use for the deployment pipeline source workspace
+
     - name: deployPipeline
       type: string
-      description: Name of the deployment pipeline to kick off
       default: deploy
+      description: Name of the deployment pipeline to run
+
+    - name: mavenGoals
+      type: array
+      default:
+        - package
+      description: Goals to run in the maven command
 
   tasks:
     - name: clone
@@ -60,9 +73,7 @@ spec:
           workspace: maven-settings
       params:
         - name: GOALS
-          value:
-            - package
-            - -Dquarkus.package.type=fast-jar
+          value: $(params.mavenGoals)
 
     - name: buildah
       taskRef:
@@ -77,7 +88,7 @@ spec:
         - name: IMAGE
           value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.name):$(params.tag)
         - name: DOCKERFILE
-          value: src/main/docker/Dockerfile.fast-jar
+          value: $(params.dockerfile)
         - name: TLSVERIFY
           value: 'false'
 

@@ -7,18 +7,23 @@ spec:
     - name: source
 
   params:
-    - name: gitUrl
+    - name: namespace
       type: string
-      description: Git URL of repository that contains k8s resources
-      default: https://github.com/stocky37/greeting-service-k8s.git
-    - name: image
+      description: Namespace to deploy to
+
+    - name: name
       type: string
-      description: Name of image to deploy
-      default: quarkus-app
+      description: Name of the application to deploy. ImageStream name should match.
+
     - name: tag
       type: string
-      description: Tag of image to deploy
       default: latest
+      description: Tag of image to deploy
+
+    - name: gitUrl
+      type: string
+      default: https://github.com/stocky37/greeting-service-k8s.git
+      description: Git URL of repository that contains k8s resources
 
   tasks:
     - name: clone
@@ -44,10 +49,8 @@ spec:
           workspace: source
       params:
         - name: namespace
-          value: example-app
-        - name: appImage
+          value: $(params.namespace)
+        - name: name
           value: $(params.image)
-        - name: appTag
+        - name: tag
           value: $(params.tag)
-        - name: deployment
-          value: $(params.image)
