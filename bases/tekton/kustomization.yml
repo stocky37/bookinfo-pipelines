@@ -1,6 +1,0 @@
-namespace: demo-tekton
-resources:
-  - resources/pvcs.yml
-  - resources/tasks/deploy.yml
-  - resources/pipelines/deploy.yml
-  - resources/pipelines/maven.yml
