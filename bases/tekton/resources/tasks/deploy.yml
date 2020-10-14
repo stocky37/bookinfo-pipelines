@@ -6,34 +6,32 @@ spec:
   workspaces:
     - name: source
   params:
-    - name: image
-      type: string
-      description: oc client base image
-      default: quay.io/openshift/origin-cli:latest
-    - name: resourcesDir
-      type: string
-      description: directory of k8s resources
-      default: "."
     - name: namespace
       type: string
-      description: namespace to deploy to
-      default: example-app
-    - name: appImage
+      description: Namespace to deploy to
+
+    - name: name
       type: string
-      description: Name of image to deploy
-      default: quarkus-app
-    - name: appTag
+      description: Name of the application to deploy. ImageStream & Deployment resource names should match.
+
+    - name: tag
       type: string
-      description: Tag of image to deploy
       default: latest
-    - name: deployment
+      description: Tag of the image to deploy
+
+    - name: dir
       type: string
-      description: Name of the deployment to wait for rollout
-      default: quarkus-app
+      default: "."
+      description: Directory of k8s resources to apply
+
+    - name: ocImage
+      type: string
+      default: quay.io/openshift/origin-cli:latest
+      description: OpenShift client image to use
 
   steps:
     - name: k8s-resources
-      image: $(params.image)
+      image: $(params.ocImage)
       workingDir: "$(workspaces.source.path)"
       command:
         - /bin/bash
@@ -42,28 +40,28 @@ spec:
         - >-
           oc apply
           --recursive
-          --filename $(params.resourcesDir)
+          --filename $(params.dir)
           --namespace $(params.namespace)
 
     - name: promote-image
-      image: $(params.image)
+      image: $(params.ocImage)
       command:
         - /bin/bash
         - -c
       args:
         - >-
           oc tag
-          $(params.appImage):$(params.appTag)
-          $(params.namespace)/$(params.appImage):$(params.appTag)
+          $(params.name):$(params.tag)
+          $(params.namespace)/$(params.name):$(params.tag)
 
     - name: wait
-      image: $(params.image)
+      image: $(params.ocImage)
       command:
         - /bin/bash
         - -c
       args:
         - >-
           oc rollout status
-          deployment/$(params.deployment)
+          deployment/$(params.name)
           --watch
           --namespace $(params.namespace)
