@@ -1,5 +1,0 @@
-namespace: demo-tekton
-bases:
-  - ../../bases/tekton
-resources:
-  - resources/namespace.yml
