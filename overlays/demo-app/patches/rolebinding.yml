@@ -1,0 +1,6 @@
+- op: add
+  path: /subjects/-
+  value:
+    kind: ServiceAccount
+    name: pipeline
+    namespace: demo-app
