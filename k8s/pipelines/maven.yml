@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: maven
+  namespace: demo-tekton-cicd
 spec:
   workspaces:
     - name: source
@@ -27,7 +28,7 @@ spec:
 
     - name: dockerfile
       type: string
-      default: Dockerfile
+      default: src/main/docker/Dockerfile.fast-jar
       description: Path to the Dockerfile to build
 
     - name: deployWorkspaceClaim
@@ -40,10 +41,16 @@ spec:
       default: deploy
       description: Name of the deployment pipeline to run
 
+
+    - name: deployNamespace
+      type: string
+      description: Namespace to deploy to
+
     - name: mavenGoals
       type: array
       default:
         - package
+        - -Dquarkus.package.type=fast-jar
       description: Goals to run in the maven command
 
   tasks:
@@ -73,7 +80,8 @@ spec:
           workspace: maven-settings
       params:
         - name: GOALS
-          value: $(params.mavenGoals)
+          value: 
+            - $(params.mavenGoals)
 
     - name: buildah
       taskRef:
@@ -105,4 +113,6 @@ spec:
             - start
             - $(params.deployPipeline)
             - --workspace=name=source,claimName=$(params.deployWorkspaceClaim)
+            - --param=name=$(params.name)
+            - --param=namespace=$(params.deployNamespace)
             - --use-param-defaults
