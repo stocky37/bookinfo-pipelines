@@ -1,8 +1,8 @@
----
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: deploy
+  namespace: demo-tekton-cicd
 spec:
   workspaces:
     - name: source
