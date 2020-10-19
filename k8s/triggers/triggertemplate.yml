@@ -4,9 +4,11 @@ metadata:
   name: maven-pipeline
 spec:
   params:
-  - name: git-repo-name
-    description: name of the git repository
+  - name: app-name
+    description: name of the application
   - name: git-repo-url
+    description: name of the git repository
+  - name: git-repo-name
     description: git url to clone
   - name: git-revision
     description: git revision to checkout (branch, tag, sha, ref…)
@@ -14,12 +16,10 @@ spec:
   - name: git-short-revision
     description: git revision truncated to 7 characters
   resourcetemplates:
-
-
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: $(tt.params.git-repo-name)-$(tt.params.git-short-revision)-$(uid)
+      name: $(tt.params.app-name)-$(tt.params.git-short-revision)-$(uid)
     spec:
       serviceAccountName: pipeline
       pipelineRef:
@@ -41,6 +41,6 @@ spec:
       - name: namespace
         value: demo-tekton-cicd
       - name: name
-        value: $(tt.params.git-repo-name)
+        value: $(tt.params.-name)
       - name: deployNamespace
         value: demo-tekton-app

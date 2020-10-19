@@ -20,9 +20,11 @@ spec:
         overlays:
           - key: extensions.short_sha
             expression: body.head_commit.id.truncate(7)
+          - key: extensions.app_name
+            expression: body.repository.name.replace('-quarkus', '')
     bindings:
     - ref: github-push
       kind: ClusterTriggerBinding
-    - ref: github-short-sha
+    - ref: github-custom
     template:
       name: maven-pipeline
