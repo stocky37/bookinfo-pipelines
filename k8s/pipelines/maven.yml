@@ -9,44 +9,52 @@ spec:
     - name: maven-settings
 
   params:
-    - name: gitUrl
+    - name: git-url
       type: string
-      description: Git URL of repository to build
+      description: git url to clone
+
+    - name: git-revision
+      type: string
+      description: git revision to checkout (branch, tag, sha, ref…)
 
     - name: namespace
       type: string
-      description: Namespace to push image to
+      description: namespace to push image to
 
-    - name: name
+    - name: app-name
       type: string
-      description: Name of image to build
+      description: application name
 
     - name: tag
       type: string
       default: latest
-      description: Tag of image to build
+      description: image tag to build
 
     - name: dockerfile
       type: string
       default: src/main/docker/Dockerfile.fast-jar
-      description: Path to the Dockerfile to build
+      description: path to the Dockerfile
 
-    - name: deployWorkspaceClaim
+    # todo: use a volumeclaimtemplate instead
+    - name: deploy-workspace-claim
       type: string
       default: k8s-src
-      description: Name of the PVC to use for the deployment pipeline source workspace
+      description: claim to use for deployment pipeline
 
-    - name: deployPipeline
+    - name: deploy-pipeline
       type: string
       default: deploy
-      description: Name of the deployment pipeline to run
+      description: deployment pipeline to run
 
-
-    - name: deployNamespace
+    - name: deploy-namespace
       type: string
-      description: Namespace to deploy to
+      description: namespace to deploy to
 
-    - name: mavenGoals
+    - name: deploy-pipeline-prefix
+      type: string
+      description: prefix for the deployment pipeline
+
+    - name: maven-goals
       type: array
       default:
         - package
@@ -63,7 +71,7 @@ spec:
           workspace: source
       params:
         - name: url
-          value: $(params.gitUrl)
+          value: $(params.git-url)
         - name: deleteExisting
           value: 'true'
 
@@ -81,7 +89,7 @@ spec:
       params:
         - name: GOALS
           value: 
-            - $(params.mavenGoals)
+            - $(params.maven-goals)
 
     - name: buildah
       taskRef:
@@ -94,7 +102,7 @@ spec:
           workspace: source
       params:
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.name):$(params.tag)
+          value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.app-name):$(params.tag)
         - name: DOCKERFILE
           value: $(params.dockerfile)
         - name: TLSVERIFY
@@ -111,8 +119,10 @@ spec:
           value:
             - pipeline
             - start
-            - $(params.deployPipeline)
-            - --workspace=name=source,claimName=$(params.deployWorkspaceClaim)
-            - --param=name=$(params.name)
-            - --param=namespace=$(params.deployNamespace)
+            - $(params.deploy-pipeline)
+            - --labels=pipeline=$(params.app-name)
+            - --prefix-name=$(params.deploy-pipeline-prefix)
+            - --workspace=name=source,claimName=$(params.deploy-workspace-claim)
+            - --param=app-name=$(params.app-name)
+            - --param=namespace=$(params.deploy-namespace)
             - --use-param-defaults

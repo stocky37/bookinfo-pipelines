@@ -1,0 +1,15 @@
+{
+    "ref": "refs/head/master",
+    "head_commit": {
+        "id": "d795869429f5db98f3cbd1f06212d955661e5240",
+        "message": "rename to greeting service"
+    },
+    "repository": {
+        "name": "greeting-service-quarkus",
+        "url": "https://github.com/stocky37/greeting-service-quarkus.git"
+    },
+    "pusher": {
+        "name": "Tom Stockwell"
+    },
+    "name": "Tom Stockwell"
+}

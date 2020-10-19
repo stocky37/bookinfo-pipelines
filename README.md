@@ -26,3 +26,8 @@ tkn pipeline start maven \
     --param deployNamespace=demo-tekton-app \
     --use-param-defaults
 ```
+
+
+## To Do
+- volume claim for deploy pipeline
+- remove need to specify current namespace
