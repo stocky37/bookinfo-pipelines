@@ -1,0 +1,8 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: github-short-sha
+spec:
+  params:
+  - name: git-short-revision
+    value: $(body.extensions.short_sha)

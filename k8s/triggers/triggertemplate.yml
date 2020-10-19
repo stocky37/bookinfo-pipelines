@@ -1,0 +1,46 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: maven-pipeline
+spec:
+  params:
+  - name: git-repo-name
+    description: name of the git repository
+  - name: git-repo-url
+    description: git url to clone
+  - name: git-revision
+    description: git revision to checkout (branch, tag, sha, ref…)
+    default: master
+  - name: git-short-revision
+    description: git revision truncated to 7 characters
+  resourcetemplates:
+
+
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: $(tt.params.git-repo-name)-$(tt.params.git-short-revision)-$(uid)
+    spec:
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: maven
+      workspaces:
+        - name: source
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+                - ReadWriteOnce # access mode may affect how you can use this volume in parallel tasks
+              resources:
+                requests:
+                  storage: 1Gi
+        - name: maven-settings
+          emptyDir: {}
+      params:
+      - name: gitUrl
+        value: $(tt.params.git-repo-url)
+      - name: namespace
+        value: demo-tekton-cicd
+      - name: name
+        value: $(tt.params.git-repo-name)
+      - name: deployNamespace
+        value: demo-tekton-app

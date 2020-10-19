@@ -11,7 +11,11 @@ spec:
   params:
     - name: gitUrl
       type: string
-      description: Git URL of repository to build
+      description: git url to clone
+
+    - name: git-revision
+      type: string
+      description: git revision to checkout (branch, tag, sha, ref…)
 
     - name: namespace
       type: string
@@ -19,7 +23,7 @@ spec:
 
     - name: name
       type: string
-      description: Name of image to build
+      description: application name
 
     - name: tag
       type: string
@@ -31,6 +35,7 @@ spec:
       default: src/main/docker/Dockerfile.fast-jar
       description: Path to the Dockerfile to build
 
+    # todo: use a volumeclaimtemplate instead
     - name: deployWorkspaceClaim
       type: string
       default: k8s-src
@@ -40,7 +45,6 @@ spec:
       type: string
       default: deploy
       description: Name of the deployment pipeline to run
-
 
     - name: deployNamespace
       type: string

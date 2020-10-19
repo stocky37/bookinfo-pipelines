@@ -1,0 +1,28 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: demo-listener
+spec:
+  serviceAccountName: pipeline
+  triggers:
+  - name: demo-pipeline-master
+    interceptors:
+    # - github:
+    #     secretRef:
+    #       secretName: github-webhooks
+    #       secretKey: token
+    #     eventTypes:
+    #       - push
+    - cel:
+        filter: >-
+          body.ref == 'refs/head/master'
+            && body.repository.name == 'greeting-service-quarkus'
+        overlays:
+          - key: extensions.short_sha
+            expression: body.head_commit.id.truncate(7)
+    bindings:
+    - ref: github-push
+      kind: ClusterTriggerBinding
+    - ref: github-short-sha
+    template:
+      name: maven-pipeline
