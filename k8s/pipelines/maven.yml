@@ -9,7 +9,7 @@ spec:
     - name: maven-settings
 
   params:
-    - name: gitUrl
+    - name: git-url
       type: string
       description: git url to clone
 
@@ -50,6 +50,10 @@ spec:
       type: string
       description: Namespace to deploy to
 
+    - name: deploy-pipeline-prefix
+      type: string
+      description: prefix for the corresponding deployment pipeline
+
     - name: mavenGoals
       type: array
       default:
@@ -67,7 +71,7 @@ spec:
           workspace: source
       params:
         - name: url
-          value: $(params.gitUrl)
+          value: $(params.git-url)
         - name: deleteExisting
           value: 'true'
 
@@ -116,6 +120,8 @@ spec:
             - pipeline
             - start
             - $(params.deployPipeline)
+            - --labels=pipeline=$(params.name)
+            - --prefix-name=$(params.deploy-pipeline-prefix)
             - --workspace=name=source,claimName=$(params.deployWorkspaceClaim)
             - --param=name=$(params.name)
             - --param=namespace=$(params.deployNamespace)
