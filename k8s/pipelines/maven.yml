@@ -7,6 +7,7 @@ spec:
   workspaces:
     - name: source
     - name: maven-settings
+    - name: maven-repo
 
   params:
     - name: git-url
@@ -74,7 +75,6 @@ spec:
     - name: maven
       taskRef:
         name: maven
-        kind: ClusterTask
       runAfter:
         - clone
       workspaces:
@@ -82,6 +82,8 @@ spec:
           workspace: source
         - name: maven-settings
           workspace: maven-settings
+        - name: maven-repo
+          workspace: maven-repo
       params:
         - name: GOALS
           value: 

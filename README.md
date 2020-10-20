@@ -22,4 +22,3 @@ Use the provided script to manually trigger a GitHub-like webhook that triggers 
 
 ## To Do
 - volume claim for deploy pipeline
-- mount maven cache
