@@ -2,6 +2,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: demo-listener
+  namespace: demo-tekton-cicd
 spec:
   serviceAccountName: pipeline
   triggers:

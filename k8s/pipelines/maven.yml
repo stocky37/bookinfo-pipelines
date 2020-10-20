@@ -17,10 +17,6 @@ spec:
       type: string
       description: git revision to checkout (branch, tag, sha, ref…)
 
-    - name: namespace
-      type: string
-      description: namespace to push image to
-
     - name: app-name
       type: string
       description: application name
@@ -102,7 +98,7 @@ spec:
           workspace: source
       params:
         - name: IMAGE
-          value: image-registry.openshift-image-registry.svc:5000/$(params.namespace)/$(params.app-name):$(params.tag)
+          value: image-registry.openshift-image-registry.svc:5000/demo-tekton-cicd/$(params.app-name):$(params.tag)
         - name: DOCKERFILE
           value: $(params.dockerfile)
         - name: TLSVERIFY

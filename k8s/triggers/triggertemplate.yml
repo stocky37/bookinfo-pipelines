@@ -2,6 +2,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: maven-pipeline
+  namespace: demo-tekton-cicd
 spec:
   params:
   - name: app-name
@@ -42,8 +43,6 @@ spec:
         value: $(tt.params.git-repo-url)
       - name: git-revision
         value: $(tt.params.git-revision)
-      - name: namespace
-        value: demo-tekton-cicd
       - name: app-name
         value: $(tt.params.app-name)
       - name: deploy-namespace
