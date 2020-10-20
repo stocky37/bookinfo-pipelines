@@ -7,32 +7,32 @@ spec:
   workspaces:
     - name: source
   params:
+    - name: app-name
+      type: string
+      description: application name - imagestream & deployment resources should match
+
     - name: namespace
       type: string
-      description: Namespace to deploy to
-
-    - name: name
-      type: string
-      description: Name of the application to deploy. ImageStream & Deployment resource names should match.
+      description: namespace to deploy to
 
     - name: tag
       type: string
       default: latest
-      description: Tag of the image to deploy
+      description: image tag to deploy
 
-    - name: dir
+    - name: k8s-dir
       type: string
       default: "."
-      description: Directory of k8s resources to apply
+      description: k8s resources directory to apply
 
-    - name: ocImage
+    - name: oc-image
       type: string
       default: quay.io/openshift/origin-cli:latest
-      description: OpenShift client image to use
+      description: openshift client image
 
   steps:
     - name: k8s-resources
-      image: $(params.ocImage)
+      image: $(params.oc-image)
       workingDir: "$(workspaces.source.path)"
       command:
         - /bin/bash
@@ -41,28 +41,28 @@ spec:
         - >-
           oc apply
           --recursive
-          --filename $(params.dir)
+          --filename $(params.k8s-dir)
           --namespace $(params.namespace)
 
     - name: promote-image
-      image: $(params.ocImage)
+      image: $(params.oc-image)
       command:
         - /bin/bash
         - -c
       args:
         - >-
           oc tag
-          $(params.name):$(params.tag)
-          $(params.namespace)/$(params.name):$(params.tag)
+          $(params.app-name):$(params.tag)
+          $(params.namespace)/$(params.app-name):$(params.tag)
 
     - name: wait
-      image: $(params.ocImage)
+      image: $(params.oc-image)
       command:
         - /bin/bash
         - -c
       args:
         - >-
           oc rollout status
-          deployment/$(params.name)
+          deployment/$(params.app-name)
           --watch
           --namespace $(params.namespace)

@@ -7,12 +7,12 @@ spec:
   triggers:
   - name: demo-pipeline-master
     interceptors:
-    # - github:
-    #     secretRef:
-    #       secretName: github-webhooks
-    #       secretKey: token
-    #     eventTypes:
-    #       - push
+    - github:
+        secretRef:
+          secretName: github-webhooks
+          secretKey: token
+        eventTypes:
+          - push
     - cel:
         filter: >-
           body.ref == 'refs/head/master'

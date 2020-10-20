@@ -44,9 +44,9 @@ spec:
         value: $(tt.params.git-revision)
       - name: namespace
         value: demo-tekton-cicd
-      - name: name
+      - name: app-name
         value: $(tt.params.app-name)
-      - name: deployNamespace
+      - name: deploy-namespace
         value: demo-tekton-app
       - name: deploy-pipeline-prefix
         value: $(tt.params.app-name)-$(tt.params.git-short-revision)-$(uid)-deploy

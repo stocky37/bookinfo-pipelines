@@ -8,23 +8,23 @@ spec:
     - name: source
 
   params:
+    - name: app-name
+      type: string
+      description: application name - imagestream & deployment resources should match
+
     - name: namespace
       type: string
-      description: Namespace to deploy to
-
-    - name: name
-      type: string
-      description: Name of the application to deploy. ImageStream name should match.
+      description: namespace to deploy to
 
     - name: tag
       type: string
       default: latest
-      description: Tag of image to deploy
+      description: image tag to deploy
 
-    - name: gitUrl
+    - name: git-url
       type: string
       default: https://github.com/stocky37/demo-tekton-k8s.git
-      description: Git URL of repository that contains k8s resources
+      description: git url of repository that contains k8s resources
 
   tasks:
     - name: clone
@@ -36,7 +36,7 @@ spec:
           workspace: source
       params:
         - name: url
-          value: $(params.gitUrl)
+          value: $(params.git-url)
         - name: deleteExisting
           value: 'true'
 
@@ -51,7 +51,7 @@ spec:
       params:
         - name: namespace
           value: $(params.namespace)
-        - name: name
-          value: $(params.name)
+        - name: app-name
+          value: $(params.app-name)
         - name: tag
           value: $(params.tag)
